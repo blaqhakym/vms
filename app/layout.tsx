@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./Navbar";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
         </header>
         <main className=" mx-auto w-full lg:w-[70%] px-2 lg:px-0 flex flex-col min-h-screen justify-between">
           {children}
+          <Toaster/>
         </main>
         <footer className="p-4 border-t text-center">
           &copy; {new Date().getFullYear()} Visitor Management System. All

@@ -1,3 +1,6 @@
+import CheckoutButton from "./CheckoutButton";
+import FormButton from "./FormButton";
+
 const activeVisitors = [
   { id: 1, name: "John Doe", visiting: "B12", timeIn: "3:45 PM" },
   { id: 2, name: "Mary Smith", visiting: "A05", timeIn: "4:10 PM" },
@@ -6,7 +9,7 @@ const activeVisitors = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-50 p-6 md:p-10">
+    <main className="min-h-screen bg-slate-50 p-6 md:p-10 mt-2">
       <section className="mx-auto w-full max-w-6xl space-y-6">
         <header className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
           <div>
@@ -17,19 +20,15 @@ export default function Home() {
               Register visitors quickly and monitor who is currently inside.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => window.location.assign("/visitor-form")}
-            className="rounded-lg bg-blue-600 px-6 py-3 text-white shadow hover:bg-blue-700"
-          >
-            New Visitor
-          </button>
+          <FormButton>
+            New Visitor <span>+</span>
+          </FormButton>
         </header>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="rounded-xl bg-white p-4 shadow">
             <p className="text-xs uppercase tracking-wide text-slate-500">
-              Today&rsquo;s visitor count
+              Today&rsquo;s visitor
             </p>
             <p className="text-3xl font-semibold text-slate-900">
               {activeVisitors.length}
@@ -74,18 +73,32 @@ export default function Home() {
                   </td>
                   <td className="px-6 py-4 text-slate-700">{visitor.timeIn}</td>
                   <td className="px-6 py-4">
-                    <button
-                      type="button"
-                      className="rounded-md bg-rose-500 px-4 py-2 text-white hover:bg-rose-600"
-                      onClick={() => alert(`Checked out ${visitor.name}`)}
-                    >
-                      Check Out
-                    </button>
+                    <CheckoutButton visitor={visitor} />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="visitors-trend rounded-xl bg-white p-4 shadow md:col-span-2">
+            <h2 className="text-sm uppercase tracking-wide text-slate-500">
+              Visitors trend
+            </h2>
+            <p className="mt-2 text-base font-semibold text-slate-900">
+              Visitors trend over the last 7 days
+            </p>
+          </div>
+
+          <div className="incidents rounded-xl bg-white p-4 shadow md:col-span-1">
+            <h2 className="text-sm uppercase tracking-wide text-slate-500">
+              Incidents
+            </h2>
+            <p className="mt-2 text-base font-semibold text-slate-900">
+              Incidents and alerts
+            </p>
+          </div>
         </div>
       </section>
     </main>
