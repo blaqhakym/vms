@@ -1,24 +1,35 @@
-// lib/actions.ts
-"use server"
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
-import { app } from "./firebase"
+import {
+  browserSessionPersistence,
+  getAuth,
+  setPersistence,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { app } from "./firebase";
 
-export const signinAction = async (formData: FormData) => {
-  const email = String(formData.get("email") ?? "")
-  const password = String(formData.get("password") ?? "")
-  const auth = getAuth(app)
-
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth,  email, password )
-    return { user: userCredential.user, error: null }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
-      if (e.code === "auth/user-not-found") {
-        return { user: null, error: "Invalid credentials." }
-      }
-      if (e.code === "auth/wrong-password") {
-        return { user: null, error: "Invalid credentials." }
-      }
-    return { user: null, error: e.code }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const handleSubmit = async (initialState: any, formData: FormData) => {
+  const email = String(formData.get("email") ?? "");
+  const password = String(formData.get("password") ?? "");
+  const auth = getAuth(app);
+  if (
+    !email ||
+    !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+  ) {
+    return { error: "Not a valid email", user: null };
   }
-}
+
+  if (!password || password.length < 6) {
+    return { error: "password must be at least 6 characters", user: null };
+  }
+  try {
+    const user = await signInWithEmailAndPassword(auth, email, password);
+    // console.log("user ", user);
+    window.sessionStorage.setItem("user", JSON.stringify(user))
+    return { user, error: null };
+  } catch (error) {
+    return {
+      user: null,
+      error: error instanceof Error ? error.message : "Login failed",
+    };
+  }
+};

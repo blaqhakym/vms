@@ -1,5 +1,8 @@
+import { getAuth } from "firebase/auth";
 import CheckoutButton from "./CheckoutButton";
 import FormButton from "./FormButton";
+import { app } from "@/lib/firebase";
+
 
 const activeVisitors = [
   { id: 1, name: "John Doe", visiting: "B12", timeIn: "3:45 PM" },
@@ -8,6 +11,12 @@ const activeVisitors = [
 ];
 
 export default function Home() {
+  const auth = getAuth(app);
+const user  =  auth.currentUser
+
+
+
+
   return (
     <main className="min-h-screen bg-slate-50 p-6 md:p-10 mt-2">
       <section className="mx-auto w-full max-w-6xl space-y-6">
@@ -20,9 +29,13 @@ export default function Home() {
               Register visitors quickly and monitor who is currently inside.
             </p>
           </div>
-          <FormButton>
-            New Visitor <span>+</span>
-          </FormButton>
+          {user ? (
+            <FormButton>
+              New Visitor <span>+</span>
+            </FormButton>
+          ) : (
+            ""
+          )}
         </header>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">

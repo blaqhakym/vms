@@ -1,25 +1,26 @@
 "use client";
-import {  User } from "firebase/auth";
-import { SubmitEvent, useState } from "react";
-import { signinAction } from "@/lib/actions";
-import { redirect } from "next/navigation";
 
-export default function LoginPage() {
-  const [status, setStatus] = useState<{ user: User | null; error: string | null } | null>(null);
+import { handleSubmit } from "@/lib/actions";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
+import { getAuth } from "firebase/auth";
+import { app } from "@/lib/firebase";
 
+export default  function LoginPage() {
+  const [state, formAction, isPending] = useActionState(handleSubmit, {
+    error: "",
+    user: null,
+  });
+  const router = useRouter();
 
-const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  const formData = new FormData(e.currentTarget);
-  const result = await signinAction(formData); // server action call
-  setStatus(result);
-
-  if (result?.user) {
-    redirect("/"); // Redirect to home page on successful login
-  }
-  };
-  
-
+  const auth = getAuth(app);
+  const user = auth.currentUser;
+  console.log("user from google", user);
+  useEffect(() => {
+    if (user) {
+      return router.push("/");
+    }
+  }, [user, router]);
 
   return (
     <main className="min-h-screen bg-linear-to-br from-slate-100 via-white to-cyan-100 p-4 md:p-8">
@@ -36,7 +37,7 @@ const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
 
         <div className="w-full md:w-1/2">
           <form
-            onSubmit={handleSubmit}
+            action={formAction}
             className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
           >
             <h2 className="text-2xl font-bold text-slate-900">Login</h2>
@@ -72,12 +73,15 @@ const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-200"
               />
             </div>
-            {status?.error && <p className="text-sm text-red-500">{status.error}</p>}
+            {state?.error && (
+              <p className="text-sm text-red-500">{state.error}</p>
+            )}
             <button
               type="submit"
+              disabled={isPending}
               className="w-full rounded-lg bg-cyan-600 px-4 py-2 text-base font-semibold text-white transition hover:bg-cyan-700"
             >
-              Login
+              {isPending ? "Submitting..." : "Submit"}
             </button>
 
             <p className="text-center text-sm text-slate-500">
